@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var User = require('../models/user');
-var Message = require('../models/Message');
-
+var Message = require('../models/message');
 
 var i = 0;
 
@@ -13,16 +12,34 @@ router.get('/', function(req, res) {
     });
 });
 
-router.get('/')
+router.get('/:username', function(req, res) {
+    User.findOne({ username: req.params.username })
+        .populate('friends')
+        .exec(function (err, user) {
+            if (err) console.log(err);
+            res.json(user);
+        });
+});
 
 router.post('/add', function(req, res) {
     var user = new User({
-        username: "test " + ++i,
-        email: "test@asd.com" + i,
+        username: "kalle",
+        email: "test@asd.com",
         password: "test",
         birthday: Date.now(),
-        gender: "Female"
+        gender: "Female",
     });
+
+    var user2 = new User({
+        username: "Henke",
+        email: "henke@asd.com",
+        password: "test",
+        birthday: Date.now(),
+        gender: "Male"
+    });
+
+    user.friends.push(user2);
+    user2.friends.push(user);
 
     user.save(function (err) {
         if (err) {
@@ -30,9 +47,18 @@ router.post('/add', function(req, res) {
             res.json(err);
         }
 
-        var message = new Message({
+        user2.save(function (err) {
+            if (err) {
+                console.log(err);
+                res.json(err);
+            }
+
+            res.json(user);
+        });
+
+        /*var message = new Message({
             fromId: user._id,
-            toId: "565ef6114957b149262c1e05",
+            toId: user._id,
             type: "Distance",
             body: "58km"
         });
@@ -44,6 +70,7 @@ router.post('/add', function(req, res) {
             }
             res.json(user);
         });
+        */
     });
 });
 

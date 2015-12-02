@@ -25,6 +25,11 @@ var User = new mongoose.Schema({
     messages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message'
+    }],
+
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }]
 });
 
