@@ -10,14 +10,13 @@ router.get('/', function(req, res) {
 });
 
 router.post('/add', function(req, res) {
-    var fId = 0;
-    var toId = 1;
+
 
     var msg = new Message({
-        fromId: ++fId,
-        toId: ++toId,
-        type: "Position",
-        body: "Test"
+        fromId: "565f05bb0b2cd11b29085304",
+        toId: "565f05bb0b2cd11b29085305",
+        type: "position",
+        body: "Testar från kalle"
     });
 
     msg.save(function (err) {

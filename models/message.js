@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var types = ["Position", "Distance", "FriendRequest"];
+var types = ["position", "distance", "friendRequest"];
 
 var Message = new mongoose.Schema({
     fromId: {

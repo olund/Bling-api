@@ -13,9 +13,15 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:username', function(req, res) {
+
     User.findOne({ username: req.params.username })
         .populate('friends')
         .exec(function (err, user) {
+
+            Message.find({ toId: user._id }, function(err, messages) {
+                console.log(messages);
+            });
+
             if (err) console.log(err);
             res.json(user);
         });
