@@ -22,8 +22,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/users', users);
 app.use('/messages', messages);
+app.use('/users', users);
+
 
 mongoose.connect('mongodb://localhost/bling-api');
 

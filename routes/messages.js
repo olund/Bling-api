@@ -3,16 +3,34 @@ var router = express.Router();
 
 var Message = require('../models/message');
 
-var msg = {
-    id: 1,
-    fromId: 1,
-    toId: 2,
-    type: "Position",
-    body: "Test"
-};
-
 router.get('/', function(req, res) {
-    res.json(msg);
+    Message.find({}, function(err, messages) {
+        res.json(messages);
+    });
 });
+
+router.post('/add', function(req, res) {
+    var fId = 0;
+    var toId = 1;
+
+    var msg = new Message({
+        fromId: ++fId,
+        toId: ++toId,
+        type: "Position",
+        body: "Test"
+    });
+
+    msg.save(function (err) {
+        if (err) {
+            console.log(err);
+            res.json(err);
+        }
+        res.json(msg);
+        console.log("added message");
+    });
+
+});
+
+
 
 module.exports = router;

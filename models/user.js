@@ -20,7 +20,12 @@ var User = new mongoose.Schema({
     gender: {
         type: String,
         enum: genderTypes
-    }
+    },
+
+    messages: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message'
+    }]
 });
 
 module.exports = mongoose.model('User', User);
