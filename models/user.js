@@ -22,11 +22,6 @@ var User = new mongoose.Schema({
         enum: genderTypes
     },
 
-    messages: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Message'
-    }],
-
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

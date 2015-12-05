@@ -13,7 +13,6 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:username', function(req, res) {
-
     User.findOne({ username: req.params.username })
         .populate('friends')
         .exec(function (err, user) {
@@ -25,6 +24,29 @@ router.get('/:username', function(req, res) {
             if (err) console.log(err);
             res.json(user);
         });
+});
+
+router.delete('/:userId', function(req, res) {
+    var id = req.params.userId;
+
+    User.remove({
+        _id: id
+    }, function(err, user) {
+        if (err) {
+            console.log(err);
+        }
+        res.json({ user: user, message: 'User removed' });
+    });
+});
+
+router.put('/:userId', function(req, res) {
+    var id = req.params.userId;
+
+    User.update({ _id: id }, req.body, function(err, user) {
+        if (err) { console.log(err); }
+        res.json(user);
+    });
+
 });
 
 router.post('/add', function(req, res) {
@@ -96,7 +118,6 @@ router.get('/messages/:userId', function(req, res) {
         }
         res.json(messages);
     });
-
 });
 
 
