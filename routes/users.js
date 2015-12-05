@@ -80,5 +80,24 @@ router.post('/add', function(req, res) {
     });
 });
 
+router.get('/messages/:userId', function(req, res) {
+    var limit = req.query.amount ? req.query.amount : 0;
+
+    Message.find({
+        toId: req.params.userId
+    })
+    .populate('fromId', 'username')
+    .limit(limit)
+    .sort({ created: -1 })
+    .exec(function (err, messages) {
+        if (err) {
+            console.log(err);
+            res.json(err);
+        }
+        res.json(messages);
+    });
+
+});
+
 
 module.exports = router;

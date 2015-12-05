@@ -17,6 +17,9 @@ var Message = new mongoose.Schema({
     },
     body: {
         type: String
+    },
+    created: {
+        type: Date
     }
 //      fans     : [{ type: Number, ref: 'Person' }]
 

@@ -9,27 +9,24 @@ router.get('/', function(req, res) {
     });
 });
 
-router.post('/add', function(req, res) {
 
+router.post('/', function(req, res) {
 
-    var msg = new Message({
-        fromId: "565f05bb0b2cd11b29085304",
-        toId: "565f05bb0b2cd11b29085305",
-        type: "position",
-        body: "Testar från kalle"
+    var message = new Message({
+        fromId: req.body.fromId,
+        toId: req.body.toId,
+        type: req.body.type,
+        body: req.body.body,
+        created: Date.now()
     });
 
-    msg.save(function (err) {
+    message.save(function (err) {
         if (err) {
             console.log(err);
             res.json(err);
         }
-        res.json(msg);
-        console.log("added message");
+        res.json(message);
     });
-
 });
-
-
 
 module.exports = router;
