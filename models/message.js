@@ -15,11 +15,21 @@ var Message = new mongoose.Schema({
         type: String,
         enum: types
     },
-    body: {
-        type: String
+
+    latitude: {
+        type: Number
     },
+
+    longitude: {
+        type: Number
+    },
+
+    read: {
+        type: Boolean
+    },
+
     created: {
-        type: Date
+        type: Number
     }
 //      fans     : [{ type: Number, ref: 'Person' }]
 
