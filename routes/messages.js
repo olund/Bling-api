@@ -67,9 +67,22 @@ router.post('/:username?', function(req, res) {
             res.json(message);
         });
     }
+});
 
 
+router.put('/:id', function(req, res) {
+
+    Message.update({ _id: req.params.id}, req.body, function(err, msg) {
+        if (err) { res.json(err); }
+        if (msg) {
+            return res.json(msg);
+        } else {
+            return res.json({ "msg": "Message to update not found" });
+        }
+
+    });
 
 });
+
 
 module.exports = router;

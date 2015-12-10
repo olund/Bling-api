@@ -12,25 +12,32 @@ router.get('/', function(req, res) {
     });
 });
 
+router.post('/friends', function(req, res) {
+    // Add ONE friend with 2 user id's
 
-router.post('/friends/:userId', function(req, res) {
-    // Add ONE friend.
+    var id1 = req.body.userOneId;
+    var id2 = req.body.userTwoId;
 
-    /*
-        TODO: vänner som redan finns ska inte läggas till.
-    */
-    var id = req.params.userId;
+    User.findOne({ _id: id1 }, function (err, user1) {
+        User.findOne({ _id: id2 }, function (err, user2) {
+            if (user1.friends.indexOf(user2._id) > -1) {
+                return res.json({ msg: 'FRIEND ALREADY EXISTS' });
+            } else {
+                user1.friends.push(user2._id);
+                user2.friends.push(user1._id);
 
-    User.findOne({ _id: id }, function (err, user) {
+                user1.save();
+                user2.save();
 
-        user.friends.push(req.body.friendId);
-
-        user.save({ _id: id }, function(err, user) {
-            if (err) { console.log(err); }
-            res.json(user);
+                Message.remove({_id: req.body.messageId }, function(err, message) {
+                    if (err) return res.json(err);
+                    return res.json({ msg: 'friend added, message deleted' });
+                });
+            }
         });
     });
 });
+
 
 
 router.get('/friends/:userId', function(req, res) {
@@ -49,7 +56,6 @@ router.get('/friends/:userId', function(req, res) {
 
         res.json(user.friends);
     });
-
 });
 
 // This fucking function fucks up the login stuff..
@@ -164,51 +170,6 @@ router.get('/messages/:userId', function(req, res) {
     });
 });
 
-var auth = function (req, res, next) {
-
-    function unauthorized(res) {
-        res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-        return res.status(401).json({ err: 'unauthorized' });
-    }
-
-    var user = basicAuth(req);
-
-    if (!user || !user.name || !user.pass) {
-        return unauthorized(res);
-    };
-
-
-    User.findOne({ username: user.name, password: user.pass }, function(err, acc) {
-        if (err) return res.status(500).json(err);
-
-        if (acc) {
-            req.user = { username: user.name };
-            return next();
-        } else {
-            return unauthorized(res);
-        }
-    });
-};
-
-/*router.get('/login', auth, function(req, res, next) {
-
-    User.findOne({ username: req.user.username }, function(err, account) {
-        if (err) return res.status(500).json(err);
-        if (account) {
-            return res.status(200).json({
-                msg: 'Authenticated!',
-                _id: account._id,
-                email: account.email,
-                username: account.username
-            });
-        } else {
-            return res.status(500).json({
-                msg: 'Something terrible happend!'
-            });
-        }
-    });
-});*/
-
 router.post('/login', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -228,56 +189,35 @@ router.post('/login', function(req, res) {
     });
 })
 
-
-
 router.post('/register', function(req, res) {
-    var error = [];
-    if (!req.body.username) {
-        error.push("Missing username.");
-    }
-    if (!req.body.password) {
-        error.push("Missing password.");
-    }
-    if (!req.body.email) {
-        error.push("Missing email.");
-    }
 
-    if (req.body.username && req.body.password && req.body.email) {
-        var query = User.where({ username: req.body.username });
-        query.findOne(function(err, acc) {
-            if (err) res.status(500).json(err);
+    User.findOne({ username: req.body.username }, function(err, acc) {
+        if (err) res.status(500).json(err);
 
-            if (acc) {
-                return res.status(400).json({
-                    msg: 'A user with that username does already exist.',
-                    details: req.body
-                });
-            } else {
+        if (acc) {
+            return res.status(400).json({
+                msg: 'A user with that username does already exist.',
+            });
+        } else {
+            // Create account and save.
+            var account = new User({
+                username: req.body.username,
+                email: req.body.email,
+                password: req.body.password
+            });
 
-                var account = new User({
-                    username: req.body.username,
-                    email: req.body.email,
-                    password: req.body.password
-                });
-
-                account.save();
+            account.save(function(err) {
+                if (err) { res.status(500).json(err); }
 
                 return res.status(201).json({
                     msg: 'A new account was created!',
-                    details: {
-                        id: account._id,
-                        email: account.email,
-                        username: account.username
-                    }
+                    _id: account._id,
+                    email: account.email,
+                    username: account.username
                 });
-            }
-        });
-    } else {
-        return res.status(400).json({
-            msg: 'Failed to meet the required fields.',
-            details: error
-        });
-    }
+            });
+        }
+    });
 });
 
 module.exports = router;
